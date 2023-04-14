@@ -1,130 +1,156 @@
 /*
 #include <iostream>
 #include <fstream>
-#include <cstring>
+
 
 using namespace std;
 
 
 
 int main()
-{
-    short n;
+{   short n;
+    short metodo=0;
     char letra;
     int Nbinario;
     int cero=0;
     int uno=0;
+    int posicion=0;//para ayudar a almacenar los binarios en caracteres_binarios[]
 
-    cout<<"Ingrese un numero que sera la semilla de codificacion: ";
+    cout<<"Numero de bits para la codificacion: ";
     cin>>n;
+    while(metodo!=1 || metodo!=2){
+        cout<<"Metodo de codificacion 1 o 2: ";
+        cin>>metodo;
+        if(metodo==1 || metodo==2)break;
+    }
 
-    char palabra[n]={};
-    int letra_binario[8]={};
-    int palabra_codificada[8*n]={};
-    int posicion=(8*n)-1;
+    // Abrir el archivo para lectura
+    ifstream archivo("C:/Users/duvan/Documents/proyectos c++/practica3/archivo.txt");
 
-       // Abrir el archivo para lectura
-       ifstream archivo("C:/Users/duvan/Documents/proyectos c++/practica3/archivo.txt");
-       // Abre el archivo de escritura
-       ofstream archivo2("C:/Users/duvan/Documents/proyectos c++/practica3/codificacion.txt");
-       // Verifica si el archivo se abrio correctamente
-       if (!archivo.is_open()) {
-           cout << "Error al abrir el archivo" << endl;
-           return 1;
-       }
+    // Verifica si el archivo se abrio correctamente
+    if (!archivo.is_open()) {
+       cout << "Error al abrir el archivo" << endl;
+       return 1;
+    }
+    //cuenta los caracteres que hay en el archivo
+    archivo.seekg(0, ios::end);//pasa el puntero al final del archivo
+    int numero_caracteres = archivo.tellg();
+    archivo.seekg(0, ios::beg);//vuelve el puntero al inicio del archivo
 
-       // Leer letra por letra
-       int i=0;
-       while (archivo >> letra) {
-             palabra[i]=letra;
-             i++;
-       }
+    char caracteres[numero_caracteres];//para almacenar los caracteres del texto
+    int caracteres_binario[8*numero_caracteres];//para almacenar los bunarios de cada caracter
+    int caracteres_codificados[8*numero_caracteres];
 
-       // Cierra el archivo
-       archivo.close();
+    // Lee letra por letra y la almacena
+    int i=0;
+    while (archivo >> letra) {
+         caracteres[i]=letra;
+         i++;
+    }
+
+    // Cierra el archivo
+    archivo.close();
 
     //toma letra por letra
-
-    for(int i=(n-1); i>=0; i--) {
-        letra=palabra[i];
+    for(int i=0; i<numero_caracteres; i++) {
+        letra=caracteres[i];
         //convierte la letra a binario
         for (int j=7; j>=0; j--) {
             Nbinario=((letra>>j)&1);
-            letra_binario[j]=Nbinario;
+            caracteres_binario[posicion]=Nbinario;
+            posicion++;
             }
- //primer metodo
-        if (cero==uno || i==(n-1)){
-            cero=0;
-            uno=0;
-            //contador de 1 y 0 //cambia 1 a 0 y viceversa
-            for (int k=7; k>=0; k--) {
-                if(letra_binario[k]==0){cero++;letra_binario[k]=1;}
-                else if(letra_binario[k]==1){uno++;letra_binario[k]=0;}
-            }
-
-            //pasa la letra en binario a un arreglo
-            for (int k=0; k<=7; k++) {
-                palabra_codificada[posicion]=letra_binario[k];
-                posicion--;
-            }
-        }
-
-        else if (cero>uno){
-            cero=0;
-            uno=0;
-            //contador de 1 y 0
-            for (int k=7; k>=0; k--) {
-                if(letra_binario[k]==0)cero++;
-                else if(letra_binario[k]==1)uno++;
-            }
-            //cambia 1 a 0 y viceversa
-            for (int k=6; k>=0; k-=2){
-                if(letra_binario[k]==0)letra_binario[k]=1;
-                else if(letra_binario[k]==1)letra_binario[k]=0;
-            }
-            //pasa la letra en binario a un arreglo
-            for (int k=0; k<=7; k++) {
-                palabra_codificada[posicion]=letra_binario[k];
-                posicion--;
-            }
-        }
-
-        else if (cero<uno){
-            cero=0;
-            uno=0;
-            //contador de 1 y 0
-            for (int k=7; k>=0; k--) {
-                if(letra_binario[k]==0)cero++;
-                else if(letra_binario[k]==1)uno++;
-            }
-            //cambia 1 a 0 y viceversa
-            for (int k=5; k>=0; k-=3) {
-                if(letra_binario[k]==0)letra_binario[k]=1;
-                else if(letra_binario[k]==1)letra_binario[k]=0;
-            }
-            //pasa la letra en binario a un arreglo
-            for (int k=0; k<=7; k++) {
-                palabra_codificada[posicion]=letra_binario[k];
-                posicion--;
-             }
-         }
     }
-    for (int i=0;  i<8*n; i++) {
-        // Verifica si el archivo se abrio correctamente
+    //agrego caracteres_binario[] a caracteres_codificados[] para hacer cambios
+    for(int k=0; k<(numero_caracteres*8); k++) {
+        caracteres_codificados[k]=caracteres_binario[k];
+    }
+    //limites para los bits
+    int limiteA=0;
+    int limiteB=n-1;
+
+    switch(metodo){
+        case 1:
+        //primer metodo
+            for(int i=0; i<(numero_caracteres*8); i++) {
+                if (cero==uno){
+                    cero=0;
+                    uno=0;
+                    //contador de 1 y 0 //cambia 1 a 0 y viceversa
+                    for (int k=limiteA; k<=limiteB ; k++) {
+                        if(caracteres_binario[k]==0){cero++;caracteres_codificados[k]=1;}
+                        else if(caracteres_binario[k]==1){uno++;caracteres_codificados[k]=0;}
+                    }
+                }
+                else if (cero>uno){
+                    cero=0;
+                    uno=0;
+                    //contador de 1 y 0
+                    for (int k=limiteA; k<=limiteB ; k++) {
+                        if(caracteres_binario[k]==0)cero++;
+                        else if(caracteres_binario[k]==1)uno++;
+                    }
+                    //cambia 1 a 0 y viceversa
+                    for (int k=limiteA+1; k<=limiteB; k+=2){
+                        if(caracteres_binario[k]==0)caracteres_codificados[k]=1;
+                        else if(caracteres_binario[k]==1)caracteres_codificados[k]=0;
+                    }
+                }
+
+                else if (cero<uno){
+                    cero=0;
+                    uno=0;
+                    //contador de 1 y 0
+                    for (int k=limiteA; k<=limiteB ; k++) {
+                        if(caracteres_binario[k]==0)cero++;
+                        else if(caracteres_binario[k]==1)uno++;
+                    }
+                    //cambia 1 a 0 y viceversa
+                    for (int k=limiteA+2; k<=limiteB; k+=3) {
+                        if(caracteres_binario[k]==0)caracteres_codificados[k]=1;
+                        else if(caracteres_binario[k]==1)caracteres_codificados[k]=0;
+                    }
+
+                }
+                limiteA=limiteB+1;
+                limiteB+=n;
+            }
+            break;
+        case 2:
+        //segundo metodo
+            while(limiteA<numero_caracteres*8) {
+                for (int k=limiteA; k<=limiteB ; k++) {
+                    caracteres_codificados[k+1]=caracteres_binario[k];
+                    if(k==limiteB)caracteres_codificados[limiteA]=caracteres_binario[k];
+                }
+                limiteA=limiteB+1;
+                limiteB+=n;
+            }
+            break;
+    }
+
+    cout<<endl;
+
+    // Abre el archivo de escritura
+    ofstream archivo2("C:/Users/duvan/Documents/proyectos c++/practica3/codificacion.txt");
+
+    for(int i=0; i<(numero_caracteres*8); i++) {
+    // Verifica si el archivo se abrio correctamente
         if (!archivo2.is_open()) {
            cerr << "Error al abrir el archivo de escritura." << endl;
            return 1;
         }
-        archivo2.seekp(i, ios::beg);
-        // Escribe en el archivo
-        archivo2 << palabra_codificada[i];
 
-        cout<<palabra_codificada[i];
+        // Escribe en el archivo
+        archivo2.seekp(i, ios::beg);
+        archivo2 << caracteres_codificados[i];
+
+        cout<<caracteres_codificados[i];
     }
     // Cierra el archivo
     archivo2.close();
     cout<<endl;
+    cout<<endl;
     return 0;
 }
 */
-
