@@ -4,9 +4,11 @@ CONFIG -= app_bundle
 CONFIG -= qt
 
 SOURCES += \
-        ejercicio1.cpp \
-        ejercicio1.2.cpp \
-        ejercicio2.cpp \
+        aplicacion_cajero.cpp \
+        ejercicio1_char.cpp \
+        ejercicio1_string.cpp \
+        ejercicio2_char.cpp \
+        ejercicio2_string.cpp \
         main.cpp
 
 DISTFILES +=

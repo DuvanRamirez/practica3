@@ -110,7 +110,7 @@ int main()
             while(limiteA<numero_caracteres) {
                 for (int k=limiteA; k<=limiteB ; k++) {
                     if(k>limiteA)caracteres_binario[k-1]=caracteres_codificados[k];
-                    if(k==limiteA)caracteres_binario[k+3]=caracteres_codificados[k];
+                    if(k==limiteA)caracteres_binario[k+(n-1)]=caracteres_codificados[k];
                 }
                 limiteA=limiteB+1;
                 limiteB+=n;
